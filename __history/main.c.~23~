@@ -1,0 +1,48 @@
+#include <16f877.h>
+#use delay(clock=4000000)
+#fuses XT,NOWDT,NOPUT,NOLVP,NOCPD,NOPROTECT,NODEBUG,NOBROWNOUT,NOWRT
+
+#use fast_io(a)
+#use fast_io(b)
+
+int sayici=0,zamanlayici=0;
+#int_timer0
+void timer0_kesme(){
+set_timer0(254);
+sayici++;
+}
+
+#int_timer1
+void timer1_kesme(){
+set_timer1(63036);
+if(sayici==1&&zamanlayic<500){
+output_high(pin_b0);
+}
+}
+
+
+void main()
+{
+   setup_psp(PSP_DISABLED);
+   setup_timer_1(T1_DISABLED);
+   setup_timer_2(T2_DISABLED,0,1);
+   setup_adc_ports(NO_ANALOGS);
+   setup_adc(ADC_OFF);
+   setup_CCP1(CCP_OFF);
+   setup_CCP2(CCP_OFF);
+   
+   set_tris_a(0x10);
+   set_tris_b(0x00);
+   
+   output_b(0x00);
+   setup_timer_0(RTCC_EXT_H_TO_L | RTCC_DIV_1);
+   set_timer0(254);
+   setup_timer_1(T1_INTERNAL | T1_DIV_BY_8);
+   set_timer1(63036);
+   enable_interrupts(INT_timer0);
+   enable_interrupts(INT_timer1);
+   enable_interrupts(GLOBAL);
+   
+   while(TRUE);
+
+}
